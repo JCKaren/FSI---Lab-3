@@ -1,0 +1,23 @@
+# Dependencias y builds
+node_modules/
+dist/
+build/
+
+# Variables de entorno (solo se versionan los .env.example)
+.env
+.env.*
+!.env.example
+
+# Datos locales de n8n (credenciales, base SQLite)
+.n8n/
+
+# Logs y sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+.idea/

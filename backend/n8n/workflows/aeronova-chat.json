@@ -1,0 +1,234 @@
+{
+  "name": "AeroNova - Chat Agente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aeronova-chat",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "d7585e68-5241-4962-965b-c4c68d36b630",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "6c181afe-636c-4bd2-837a-261f0664ddfb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "ce15c3b8-ad6c-4541-8d34-9d62a9ca25ca",
+              "leftValue": "={{ typeof $json.body.message === 'string' && $json.body.message.trim().length > 0 && $json.body.message.length <= 1000 && typeof $json.body.sessionId === 'string' && $json.body.sessionId.trim().length > 0 && $json.body.context !== null && typeof $json.body.context === 'object' && !Array.isArray($json.body.context) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "524c7400-e9e5-4807-8409-5f2276e1aab3",
+      "name": "¿Request válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Pregunta del usuario: {{ $json.body.message }}\nVista actual: {{ $json.body.context.view }}\nContexto del CRM (JSON): {{ JSON.stringify($json.body.context) }}",
+        "options": {
+          "systemMessage": "Eres \"Nova\", el asistente de análisis del CRM de AeroNova, una aerolínea colombiana.\nAyudas al gerente comercial y de servicio al pasajero a entender y actuar sobre dos\nprocesos: la VENTA DE TIQUETES y el CHECK-IN.\n\nCómo responder:\n- Responde siempre en español, de forma concisa (máximo 5 frases o una lista corta).\n- Usa ÚNICAMENTE los datos que vienen en el \"Contexto del CRM\". Si un dato no está,\n  dilo claramente y sugiere qué filtro o módulo revisar. Nunca inventes cifras.\n- Ten en cuenta los filtros activos (filters) al interpretar los números y menciónalos\n  cuando sea relevante (ej. \"en octubre, para la ruta BOG-MDE...\").\n- Si hay un registro seleccionado (selected), la pregunta probablemente se refiere a él:\n  explícalo con sus datos (vienen con nombres de campo en español).\n- Formatea el dinero en pesos colombianos (ej. $184.500.000 COP) y las tasas como porcentaje.\n- Cuando detectes un problema, termina con una recomendación accionable.\n\nDefiniciones de KPIs:\n- Ingresos = suma de ventas pagadas. Tiquete promedio = ingresos / tiquetes vendidos.\n- Conversión = pagadas / (pagadas + expiradas + canceladas).\n- Ocupación = tiquetes pagados / capacidad del vuelo (<60% es baja).\n- Tasa de check-in completado = completados / (completados + rechazados).\n- % digital = check-ins por web, app o kiosko / total completados.\n- No-show = tiquete pagado de un vuelo ya despegado sin check-in o sin abordar.\n- revenueByStage muestra los ingresos y reservas en cada etapa de venta (Búsqueda,\n  Reservada, Pago pendiente, Emitida, Cancelada/Expirada).\n\nReglas de negocio:\n- Check-in online: abre 48 h y cierra 1 h antes. Counter: abre 3 h antes y cierra 1 h\n  (nacional) o 1,5 h (internacional) antes.\n- Documentos: nacional, documento de identidad; internacional, pasaporte vigente y visa si aplica.\n- Las reservas tienen 24 h para pagarse; si no, expiran.\n- Franquicia: básica 0 maletas, clásica 1x23 kg, flex 2x23 kg, business 2x32 kg.\n  Exceso: maleta adicional $150.000, sobrepeso $90.000.\n- Motivos de rechazo de check-in: reserva_no_encontrada, pago_pendiente, vuelo_cancelado,\n  fuera_de_ventana, documento_invalido, sobreventa.\n\nDecisiones típicas que puedes recomendar: promociones en rutas con baja ocupación,\nrecordatorios de check-in, abrir más counters, reasignar clientes a agentes bajo su meta,\nrevisar la pasarela de pagos de un canal con baja conversión, reforzar la comunicación de\ndocumentos en rutas internacionales.\n\nSi te preguntan algo fuera del CRM de AeroNova, responde amablemente que solo puedes\nayudar con información de ventas y check-in."
+        }
+      },
+      "id": "250a20b7-87ef-415b-9d53-58b2ab5b0fe6",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        -100
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "e17bd3f1-c0cb-40c4-a45f-c346efb05833",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        420,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}",
+        "contextWindowLength": 10
+      },
+      "id": "7b31ebdd-612c-4536-9772-e1e2f9c431ff",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        580,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"response\": $json.output, \"actions\": [] } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "1f921ead-d46b-4e37-807c-75046a0c587c",
+      "name": "Responder éxito",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"response\": \"Lo siento, no pude procesar tu pregunta en este momento. Intenta de nuevo.\", \"actions\": [], \"error\": true } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "7ae04084-8d1b-4a99-a138-5cc3d93af707",
+      "name": "Responder error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"response\": \"La solicitud no es válida: faltan los campos message, sessionId o context.\", \"actions\": [], \"error\": true } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "4a8ef0a7-a85a-466b-859d-5ad784daa579",
+      "name": "Responder 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "¿Request válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Request válido?": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Responder éxito",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": []
+}
