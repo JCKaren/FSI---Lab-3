@@ -1,10 +1,5 @@
 # Workflow n8n de AeroNova
 
-El workflow está en `n8n/workflows/aeronova-chat.json`. Se recibió desde
-[JCKaren/FSI---Lab-3](https://github.com/JCKaren/FSI---Lab-3), commit `545425e`
-(`feat: backend workflow v1`), y luego se exportó desde la instancia n8n local con
-la configuración usada para el laboratorio.
-
 ## Importar y configurar
 
 1. Abre la instancia n8n del equipo e importa `n8n/workflows/aeronova-chat.json`
@@ -37,15 +32,11 @@ n8n Cloud u otra máquina, reemplázala por la Production URL de esa instancia.
    Comprueba la ejecución en n8n y que el JSON devuelva `{ "response": "...",
    "actions": [] }`.
 
-Usa únicamente la Production URL para el frontend. La Test URL funciona solo
-mientras el workflow escucha un evento de prueba. Nunca pongas la API key en el
-frontend, en `.env` de Vite ni en este repositorio.
 
 ## Contrato con el frontend
 
 El frontend hace `POST` con `Content-Type: application/json` y envía `message`,
-`sessionId` y `context` según `docs/INTEGRACION_FRONTEND.md` y la sección 12 de
-`CONTEXTO_PROYECTO.md`. La memoria recibe el mismo `sessionId`. El agente usa
+`sessionId` y `context`. La memoria recibe el mismo `sessionId`. El agente usa
 solo los datos del `context`; no accede a una base de datos.
 
 La rama «Responder 400» devuelve estado HTTP 400 para una solicitud inválida. El

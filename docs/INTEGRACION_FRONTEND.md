@@ -43,12 +43,6 @@ respuesta local calculada; no es el agente Gemini.
 }
 ```
 
-Los objetos vacíos de este ejemplo se llenan con las propiedades exactas de la
-sección 12.2 de `CONTEXTO_PROYECTO.md`. Tasas 0–1, COP enteros, máximo 10 elementos
-por agregado, solicitud menor de 15.000 bytes. `route` es código como `BOG-MDE`,
-`flight` es número como `NV526`, `agentId` es UUID. `selected` incluye tipo y datos
-del registro cuando se pulsa «Consultar este registro con Nova» en un detalle.
-
 La petición usa `Content-Type: application/json`. Timeout: 30 segundos.
 El reloj de los datos es fijo (28/10/2026 12:00 Bogotá); `generatedAt` es el
 momento real en que se genera el contexto. El agente debe interpretar las fechas
@@ -76,6 +70,3 @@ una ejecución exitosa en n8n. Para ampliar la revisión manual:
 5. Preguntar algo ausente: el agente debe reconocer el límite del contexto.
 6. Detener el backend: comprobar aviso y botón de reintento.
 7. Restaurar backend y reintentar; abrir otra pestaña para verificar sesiones separadas.
-
-No enviar ni pegar API keys en archivos del frontend. La URL del webhook es visible
-en el navegador por diseño; no debe contener una clave secreta en sus parámetros.
