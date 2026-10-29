@@ -1,0 +1,11 @@
+{
+  "ventas": [
+    {"pnr": "K7XQ2M", "pasajero": "Andrés Gómez", "vuelo": "NV214", "ruta": "BOG-MDE", "canal": "web", "agente": null, "tarifa": "clasica", "monto": 389000, "estado": "paid", "fecha": "2026-10-20"},
+    {"pnr": "P3LW8T", "pasajero": "María Torres", "vuelo": "NV530", "ruta": "BOG-MIA", "canal": "counter", "agente": "Laura Méndez", "tarifa": "flex", "monto": 2150000, "estado": "pending", "fecha": "2026-10-27"},
+    {"pnr": "Z9HD4R", "pasajero": "Julián Rojas", "vuelo": "NV118", "ruta": "CLO-BOG", "canal": "app", "agente": null, "tarifa": "basica", "monto": 214000, "estado": "expired", "fecha": "2026-10-25"}
+  ],
+  "checkins": [
+    {"pnr": "K7XQ2M", "vuelo": "NV214", "canal": "app", "estado": "completed", "motivo_rechazo": null, "asiento": "14C", "maletas": 1, "cargo_exceso": 0, "duracion_seg": 95, "fecha": "2026-10-28"},
+    {"pnr": "B5MN7K", "vuelo": "NV530", "canal": "counter", "estado": "rejected", "motivo_rechazo": "documento_invalido", "asiento": null, "maletas": 0, "cargo_exceso": 0, "duracion_seg": 420, "fecha": "2026-10-28"}
+  ]
+}

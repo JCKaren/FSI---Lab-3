@@ -21,3 +21,11 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+AeroNova-Lab3-entrega.zip
